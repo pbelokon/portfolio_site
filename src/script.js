@@ -6,6 +6,7 @@ import GUI from 'lil-gui'
 import gsap from 'gsap'
 import particlesVertexShader from './shaders/particles/vertex.glsl'
 import particlesFragmentShader from './shaders/particles/fragment.glsl'
+import { mod } from 'three/examples/jsm/nodes/Nodes.js'
 
 /**
  * Base
@@ -60,7 +61,7 @@ window.addEventListener('resize', () =>
  */
 // Base camera
 const camera = new THREE.PerspectiveCamera(35, sizes.width / sizes.height, 0.1, 100)
-camera.position.set(0, 0, 8 * 2)
+camera.position.set(0, 0, 20)
 scene.add(camera)
 
 // Controls
@@ -90,7 +91,7 @@ let particles = null
 gltfLoader.load('./models.glb', (gltf) =>
 {
     particles = {}
-    particles.index = 0
+    particles.index = 1
 
     // Positions
     const positions = gltf.scene.children.map(child => child.geometry.attributes.position)
@@ -178,7 +179,7 @@ gltfLoader.load('./models.glb', (gltf) =>
         gsap.fromTo(
             particles.material.uniforms.uProgress,
             { value: 0 },
-            { value: 1, duration: 3, ease: 'linear' }
+            { value: 1, duration: 3, ease: 'linear', yoyo: true, repeat: -1, repeatDelay: 3}
         )
 
         // Save index
@@ -192,7 +193,8 @@ gltfLoader.load('./models.glb', (gltf) =>
 
     particles.morph0 = () => { particles.morph(0) }
     particles.morph1 = () => { particles.morph(1) }
-    
+
+    particles.morph(0)
 
     gui.add(particles, 'morph0')
     gui.add(particles, 'morph1')
@@ -211,6 +213,8 @@ const tick = () =>
 
     // Call tick again on the next frame
     window.requestAnimationFrame(tick)
+
+    // Animate Morphing
 }
 
 tick()
